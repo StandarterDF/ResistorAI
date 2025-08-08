@@ -15,6 +15,7 @@
             --dark-bg-lighter: #2d3748;
             --text-main: #e2e8f0;
             --text-secondary: #a0aec0;
+            --wire-color: #e0e0e0;
             --shadow: 0 10px 30px rgba(0,0,0,0.25);
             --radius: 16px;
         }
@@ -190,10 +191,9 @@
         }
         .circuit-svg {
             width: 100%;
-            max-width: 360px;
+            max-width: 420px;
             margin: 0 auto 20px;
             display: block;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
         }
         .formula-box {
             background: rgba(255,255,255,0.05);
@@ -243,6 +243,8 @@
             fill: var(--text-main);
             font-size: 1.4rem;
             font-weight: 700;
+            text-anchor: middle;
+            dominant-baseline: middle;
         }
         @media (max-width: 768px) {
             .input-group {
@@ -255,7 +257,7 @@
                 grid-template-columns: 1fr;
             }
             .circuit-svg {
-                max-width: 300px;
+                max-width: 100%;
             }
         }
     </style>
@@ -276,7 +278,7 @@
                     min="0.01"
                     step="0.01"
                     placeholder="Введите значение..."
-                    value="100">
+                    value="188">
             </div>
             
             <div class="form-group">
@@ -370,72 +372,54 @@
             ]
         };
 
-        // SVG для параллельных резисторов (улучшенный)
-        function getParallelResistorsSVG(r1, r2) {
+        // SVG для параллельных резисторов (чистый дизайн)
+        function getParallelResistorsSVG() {
             return `
-            <svg class="circuit-svg" viewBox="0 0 360 140" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="wireGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#5290f9" />
-                        <stop offset="100%" stop-color="#4a74e3" />
-                    </linearGradient>
-                </defs>
+            <svg class="circuit-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+                <!-- Горизонтальные провода -->
+                <path d="M20 85 L100 85" stroke="var(--wire-color)" stroke-width="5" fill="none" />
+                <path d="M300 85 L380 85" stroke="var(--wire-color)" stroke-width="5" fill="none" />
                 
-                <!-- Входной провод -->
-                <path d="M20 70 L80 70" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
+                <!-- Верхний резистор R1 -->
+                <path d="M100 85 L100 50" stroke="var(--wire-color)" stroke-width="5" fill="none" />
+                <rect x="150" y="35" width="100" height="30" rx="4" fill="var(--dark-bg-lighter)" stroke="var(--primary)" stroke-width="3" />
+                <text x="200" y="50" class="resistance-label">R₁</text>
+                <path d="M250 50 L300 50" stroke="var(--wire-color)" stroke-width="5" fill="none" />
+                <path d="M300 50 L300 85" stroke="var(--wire-color)" stroke-width="5" fill="none" />
                 
-                <!-- Резистор R1 -->
-                <path d="M80 70 L80 40" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
-                <path d="M80 40 L280 40" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
-                <path d="M280 40 L280 70" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
-                <rect x="120" y="20" width="80" height="40" rx="3" fill="#1e293b" stroke="#5290f9" stroke-width="2" />
-                <path d="M120 40 L200 40" stroke="#0cf0b0" stroke-width="3" fill="none" />
-                <text x="160" y="62" class="resistance-label" text-anchor="middle">R1</text>
-                
-                <!-- Резистор R2 -->
-                <path d="M80 70 L80 100" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
-                <path d="M80 100 L280 100" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
-                <path d="M280 100 L280 70" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
-                <rect x="120" y="80" width="80" height="40" rx="3" fill="#1e293b" stroke="#5290f9" stroke-width="2" />
-                <path d="M120 100 L200 100" stroke="#0cf0b0" stroke-width="3" fill="none" />
-                <text x="160" y="122" class="resistance-label" text-anchor="middle">R2</text>
-                
-                <!-- Выходные провода -->
-                <path d="M280 70 L340 70" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
+                <!-- Нижний резистор R2 -->
+                <path d="M100 85 L100 120" stroke="var(--wire-color)" stroke-width="5" fill="none" />
+                <rect x="150" y="110" width="100" height="30" rx="4" fill="var(--dark-bg-lighter)" stroke="var(--primary)" stroke-width="3" />
+                <text x="200" y="125" class="resistance-label">R₂</text>
+                <path d="M250 120 L300 120" stroke="var(--wire-color)" stroke-width="5" fill="none" />
+                <path d="M300 120 L300 85" stroke="var(--wire-color)" stroke-width="5" fill="none" />
                 
                 <!-- Маркеры ввода/вывода -->
-                <path d="M10 65 L20 70 L10 75 Z" fill="url(#wireGradient)" />
-                <path d="M340 65 L350 70 L340 75 Z" fill="url(#wireGradient)" />
+                <path d="M10 80 L20 85 L10 90 Z" fill="var(--wire-color)" />
+                <path d="M380 80 L390 85 L380 90 Z" fill="var(--wire-color)" />
             </svg>
             `;
         }
 
-        // SVG для одинарного резистора (улучшенный)
-        function getSingleResistorSVG(r) {
+        // SVG для одинарного резистора (чистый дизайн)
+        function getSingleResistorSVG() {
             return `
-            <svg class="circuit-svg" viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="wireGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#0cf0b0" />
-                        <stop offset="100%" stop-color="#0ad6a0" />
-                    </linearGradient>
-                </defs>
+            <svg class="circuit-svg" viewBox="0 0 400 140" xmlns="http://www.w3.org/2000/svg">
+                <!-- Основные провода -->
+                <path d="M20 70 L120 70" stroke="var(--wire-color)" stroke-width="5" fill="none" />
+                <path d="M280 70 L380 70" stroke="var(--wire-color)" stroke-width="5" fill="none" />
                 
-                <!-- Входной провод -->
-                <path d="M20 60 L100 60" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
+                <!-- Резистор -->
+                <rect x="140" y="40" width="120" height="60" rx="5" fill="var(--dark-bg-lighter)" stroke="var(--secondary)" stroke-width="3" />
+                <text x="200" y="70" class="resistance-label">R (x2)</text>
                 
-                <!-- Резистор R -->
-                <path d="M100 60 L260 60" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
-                <rect x="130" y="30" width="100" height="60" rx="4" fill="#1e293b" stroke="#0cf0b0" stroke-width="2" />
-                <path d="M130 60 L230 60" stroke="#5290f9" stroke-width="4" fill="none" />
-                <text x="180" y="92" class="resistance-label" text-anchor="middle">R (x2)</text>
-                
-                <!-- Выходные провода -->
-                <path d="M260 60 L340 60" stroke="url(#wireGradient)" stroke-width="4" fill="none" />
+                <!-- Соединительные провода -->
+                <path d="M120 70 L140 70" stroke="var(--wire-color)" stroke-width="5" fill="none" />
+                <path d="M260 70 L280 70" stroke="var(--wire-color)" stroke-width="5" fill="none" />
                 
                 <!-- Маркеры ввода/вывода -->
-                <path d="M10 55 L20 60 L10 65 Z" fill="url(#wireGradient)" />
-                <path d="M340 55 L350 60 L340 65 Z" fill="url(#wireGradient)" />
+                <path d="M10 65 L20 70 L10 75 Z" fill="var(--wire-color)" />
+                <path d="M380 65 L390 70 L380 75 Z" fill="var(--wire-color)" />
             </svg>
             `;
         }
@@ -465,7 +449,7 @@
             
             for (let i = 0; i < series.length; i++) {
                 const r1 = series[i];
-                if (r1 <= target * 0.5) continue;
+                if (r1 <= target) continue;  // Фильтр малых значений
                 
                 const idealR2 = (r1 * target) / (r1 - target);
                 if (idealR2 <= 0 || !isFinite(idealR2)) continue;
@@ -542,9 +526,6 @@
                 const differentSolution = findDifferentSolution(targetRes, series);
                 
                 // Отрисовка основного решения
-                mainCard.classList.remove('secondary');
-                mainCard.classList.add('primary');
-                
                 mainBadge.textContent = "РЕКОМЕНДУЕМОЕ";
                 mainTitle.textContent = "Оптимальное решение";
                 
@@ -552,7 +533,7 @@
                     // Решение с одинаковыми резисторами лучше
                     mainContent.innerHTML = `
                         <div class="resistor-container">
-                            ${getSingleResistorSVG(sameSolution.resistorValue)}
+                            ${getSingleResistorSVG()}
                             <div class="resistor-single">
                                 <div class="value">
                                     R = ${formatResistance(sameSolution.resistorValue)}
@@ -571,14 +552,14 @@
                         </div>
                         
                         <div class="formula-box">
-                            R = Rₒ / 2 (параллельное соединение)
+                            R = Rₒ / 2 (сдвоенные резисторы)
                         </div>
                     `;
                 } else {
                     // Решение с разными резисторами лучше
                     mainContent.innerHTML = `
                         <div class="resistor-container">
-                            ${getParallelResistorsSVG(differentSolution.r1, differentSolution.r2)}
+                            ${getParallelResistorsSVG()}
                             <div class="resistor-single">
                                 <div class="value">
                                     R₁ = ${formatResistance(differentSolution.r1)}
@@ -617,7 +598,7 @@
                 
                 sameContent.innerHTML = `
                     <div class="resistor-container">
-                        ${getSingleResistorSVG(sameSolution.resistorValue)}
+                        ${getSingleResistorSVG()}
                         <div class="resistor-single">
                             <div class="value">
                                 R = ${formatResistance(sameSolution.resistorValue)}
@@ -638,7 +619,7 @@
                     ${sameSolution.isExact ? `<div class="exact-match">Точное совпадение!</div>` : ''}
                     
                     <div class="formula-box">
-                        R = Rₒ / 2 (параллельное соединение)
+                        R = Rₒ / 2 (сдвоенные резисторы)
                     </div>
                 `;
             }
@@ -650,7 +631,7 @@
             });
             seriesSelect.addEventListener('change', calculate);
             
-            // Первоначальный расчет (для 100 Ом)
+            // Первоначальный расчет
             calculate();
         });
     </script>
