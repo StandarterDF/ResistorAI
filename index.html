@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор резисторов</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .description {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .input-group {
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 10px;
+            font-size: 17px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 1px #3498db;
+        }
+        select {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 10px;
+            font-size: 17px;
+            background-color: white;
+            cursor: pointer;
+        }
+        button {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+        button:hover {
+            background: linear-gradient(to right, #2980b9, #2573a7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .results {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+            display: none;
+            transition: all 0.4s ease;
+        }
+        .results h2 {
+            color: #2c3e50;
+            margin-bottom: 18px;
+            font-size: 22px;
+        }
+        .result-item {
+            margin: 16px 0;
+        }
+        .res-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-top: 5px;
+        }
+        .additional-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 15px;
+        }
+        .error {
+            color: #c0392b;
+            background: #fadbd8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            transition: all 0.3s;
+        }
+        .success {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .notation {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Подбор резисторов</h1>
+            <p class="description">Подбор двух резисторов для параллельного соединения</p>
+        </div>
+        
+        <div class="controls">
+            <div class="input-group">
+                <label for="targetResistance">Целевое сопротивление (Ом):</label>
+                <input 
+                    type="number"
+                    id="targetResistance"
+                    placeholder="Например: 100"
+                    min="0.01"
+                    step="0.01"
+                    value="100"
+                >
+            </div>
+            
+            <div class="input-group">
+                <label for="resistorSeries">Стандартный ряд:</label>
+                <select id="resistorSeries">
+                    <option value="E24">E24 (5%)</option>
+                    <option value="E48">E48 (2%)</option>
+                    <option value="E96">E96 (1%)</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="calculateBtn">Подобрать резисторы</button>
+        
+        <div class="error" id="errorMessage">
+            Ошибка: Введите положительное значение сопротивления
+        </div>
+        
+        <div class="results" id="resultSection">
+            <h2>Оптимальная комбинация</h2>
+            
+            <div class="result-item">
+                <div>Первый резистор:</div>
+                <div class="res-value" id="resistor1">100 Ом</div>
+            </div>
+            
+            <div class="result-item">
+                <div>Второй резистор:</div>
+                <div class="res-value" id="resistor2">100 Ом</div>
+            </div>
+            
+            <div class="result-item">
+                <div>Реальное сопротивление:</div>
+                <div class="res-value" id="resultResistance">50 Ом</div>
+            </div>
+            
+            <div class="result-item">
+                <div>Погрешность:</div>
+                <div class="res-value" id="errorValue">0 Ом</div>
+            </div>
+            
+            <div class="additional-info">
+                При параллельном соединении: 1/R = 1/R₁ + 1/R₂
+            </div>
+        </div>
+        
+        <div class="notation">
+            * Результаты подбираются из указанного стандартного ряда резисторов
+        </div>
+    </div>
+
+    <script>
+        // Реальные значения рядов (E24, E48, E96)
+        const SERIES = {
+            E24: [
+                1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4,
+                2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2,
+                6.8, 7.5, 8.2, 9.1, 10, 11, 12, 13, 15, 16, 18, 
+                20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 
+                62, 68, 75, 82, 91
+            ],
+            E48: [
+                1.00, 1.05, 1.10, 1.15, 1.21, 1.27, 1.33, 1.40, 1.47, 1.54,
+                1.62, 1.69, 1.78, 1.87, 1.96, 2.05, 2.15, 2.26, 2.37, 2.49,
+                2.61, 2.74, 2.87, 3.01, 3.16, 3.32, 3.48, 3.65, 3.83, 4.02,
+                4.22, 4.42, 4.64, 4.87, 5.11, 5.36, 5.62, 5.90, 6.19, 6.49,
+                6.81, 7.15, 7.50, 7.87, 8.25, 8.66, 9.09, 9.53
+            ],
+            E96: [
+                1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 1.21, 1.24,
+                1.27, 1.30, 1.33, 1.37, 1.40, 1.43, 1.47, 1.50, 1.54, 1.58,
+                1.62, 1.65, 1.69, 1.74, 1.78, 1.82, 1.87, 1.91, 1.96, 2.00,
+                2.05, 2.10, 2.15, 2.21, 2.26, 2.32, 2.37, 2.43, 2.49, 2.55,
+                2.61, 2.67, 2.74, 2.80, 2.87, 2.94, 3.01, 3.09, 3.16, 3.24,
+                3.32, 3.40, 3.48, 3.57, 3.65, 3.74, 3.83, 3.92, 4.02, 4.12,
+                4.22, 4.32, 4.42, 4.53, 4.64, 4.75, 4.87, 4.99, 5.11, 5.23,
+                5.36, 5.49, 5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65,
+                6.81, 6.98, 7.15, 7.32, 7.50, 7.68, 7.87, 8.06, 8.25, 8.45,
+                8.66, 8.87, 9.09, 9.31, 9.53, 9.76
+            ]
+        };
+
+        // Генерируем расширенные ряды (0.1Ω до 1MΩ)
+        function extendSeries(baseSeries) {
+            const extended = [];
+            for (const multiplier of [0.01, 0.1, 1, 10, 100, 1000, 10000]) {
+                for (const value of baseSeries) {
+                    extended.push(value * multiplier);
+                }
+            }
+            return extended;
+        }
+
+        // Находим ближайшее значение из массива
+        function findNearest(arr, value) {
+            return arr.reduce((prev, curr) => {
+                return (Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev);
+            });
+        }
+
+        // Расчёт параллельного соединения
+        function parallelResistance(r1, r2) {
+            return (r1 * r2) / (r1 + r2);
+        }
+
+        // Основная функция подбора
+        function findBestResistors(target, series) {
+            let best = { error: Infinity };
+            const localSeries = [...series].sort((a, b) => a - b);
+            
+            for (const r1 of localSeries) {
+                if (r1 <= 0.0001) continue;
+                
+                // Расчёт требуемого второго резистора
+                const requiredR2 = (r1 * target) / (r1 - target);
+                if (requiredR2 <= 0 || !isFinite(requiredR2)) continue;
+                
+                // Поиск ближайшего фактического резистора
+                const r2 = findNearest(localSeries, requiredR2);
+                
+                // Расчёт сопротивления параллельной пары
+                const actualRes = parallelResistance(r1, r2);
+                const error = Math.abs(actualRes - target);
+                
+                // Сохраняем лучший результат
+                if (error < best.error) {
+                    best = { r1, r2, actualRes, error };
+                }
+            }
+            
+            return best;
+        }
+
+        // Форматирование значения сопротивления
+        function formatResistance(value) {
+            if (value >= 1000000) return (value / 1000000).toFixed(3) + ' MΩ';
+            if (value >= 1000) return (value / 1000).toFixed(3) + ' kΩ';
+            return value.toFixed(3) + ' Ω';
+        }
+
+        // Обработчики событий после загрузки DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            // Получаем элементы DOM
+            const targetInput = document.getElementById('targetResistance');
+            const seriesSelect = document.getElementById('resistorSeries');
+            const calcBtn = document.getElementById('calculateBtn');
+            const errorDiv = document.getElementById('errorMessage');
+            const resultSection = document.getElementById('resultSection');
+            const resistor1 = document.getElementById('resistor1');
+            const resistor2 = document.getElementById('resistor2');
+            const resultRes = document.getElementById('resultResistance');
+            const errorValue = document.getElementById('errorValue');
+            
+            // Предварительно генерируем ряды
+            const seriesCache = {
+                E24: extendSeries(SERIES.E24),
+                E48: extendSeries(SERIES.E48),
+                E96: extendSeries(SERIES.E96)
+            };
+            
+            // Обработчик расчета
+            calcBtn.addEventListener('click', () => {
+                const target = parseFloat(targetInput.value);
+                const seriesKey = seriesSelect.value;
+                const series = seriesCache[seriesKey];
+                
+                // Проверка ввода
+                if (isNaN(target) || target <= 0) {
+                    errorDiv.style.display = 'block';
+                    resultSection.style.display = 'none';
+                    return;
+                }
+                
+                // Выполняем расчет
+                errorDiv.style.display = 'none';
+                const result = findBestResistors(target, series);
+                
+                // Форматируем и выводим результат
+                resistor1.textContent = formatResistance(result.r1);
+                resistor2.textContent = formatResistance(result.r2);
+                resultRes.textContent = formatResistance(result.actualRes);
+                errorValue.textContent = `${(result.error).toFixed(6)} Ω (${((result.error/target)*100).toFixed(3)}%)`;
+                
+                // Показываем результаты с анимацией
+                resultSection.style.display = 'block';
+                resultSection.classList.add('success');
+            });
+            
+            // Обработчик Enter
+            targetInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') calcBtn.click();
+            });
+            
+            // Авторасчет при загрузке
+            calcBtn.click();
+        });
+    </script>
+</body>
+</html>
