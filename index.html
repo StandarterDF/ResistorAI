@@ -168,14 +168,10 @@
             align-items: center;
             gap: 10px;
         }
-        .circuit-icon {
-            font-size: 2rem;
-        }
-        .primary .circuit-icon {
-            color: var(--primary);
-        }
-        .secondary .circuit-icon {
-            color: var(--secondary);
+        .circuit-svg {
+            width: 150px;
+            height: 80px;
+            margin-bottom: 15px;
         }
         .formula-box {
             background: rgba(67, 97, 238, 0.1);
@@ -203,6 +199,19 @@
             font-weight: 600;
             margin-top: 10px;
         }
+        .resistor-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .resistor-single {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
         @media (max-width: 768px) {
             .input-group {
                 flex-direction: column;
@@ -212,6 +221,10 @@
             }
             .results {
                 grid-template-columns: 1fr;
+            }
+            .circuit-svg {
+                width: 100%;
+                max-width: 300px;
             }
         }
     </style>
@@ -232,7 +245,7 @@
                     min="0.01"
                     step="0.01"
                     placeholder="Введите значение..."
-                    value="188">
+                    value="100">
             </div>
             
             <div class="form-group">
@@ -256,7 +269,7 @@
             <div class="solution-card primary" id="mainSolutionCard">
                 <div class="card-header">
                     <h2 id="mainSolutionTitle">Основное решение</h2>
-                    <span class="best-badge primary-badge" id="mainBadge">ОСНОВНОЕ</span>
+                    <span class="best-badge primary-badge" id="mainBadge">РЕКОМЕНДУЕМОЕ</span>
                 </div>
                 
                 <div id="mainSolutionContent">
@@ -325,6 +338,66 @@
                 75.0, 76.8, 78.7, 80.6, 82.5, 84.5, 86.6, 88.7, 90.9, 93.1
             ]
         };
+
+        // SVG для параллельных резисторов
+        function getParallelResistorsSVG() {
+            return `
+            <svg class="circuit-svg" viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+                <!-- Main wires -->
+                <path d="M15 60 L90 60" stroke="#4361ee" stroke-width="3" fill="none"/>
+                <path d="M210 60 L285 60" stroke="#4361ee" stroke-width="3" fill="none"/>
+                
+                <!-- Resistor 1 -->
+                <path d="M90 20 L210 20" stroke="#2b2d42" stroke-width="2" fill="none"/>
+                <rect x="100" y="10" width="80" height="20" stroke="#2b2d42" stroke-width="2" fill="#f0f0f0"/>
+                <path d="M125 7 L125 12" stroke="#2b2d42" stroke-width="2" fill="none"/>
+                <path d="M155 27 L155 32" stroke="#2b2d42" stroke-width="2" fill="none"/>
+                <path d="M125 15 L130 20 L120 20 Z" stroke="none" fill="#4361ee"/>
+                <path d="M155 25 L170 15 L170 25 Z" stroke="none" fill="#4361ee"/>
+                
+                <!-- Resistor 2 -->
+                <path d="M90 100 L210 100" stroke="#2b2d42" stroke-width="2" fill="none"/>
+                <rect x="100" y="90" width="80" height="20" stroke="#2b2d42" stroke-width="2" fill="#f0f0f0"/>
+                <path d="M125 87 L125 92" stroke="#2b2d42" stroke-width="2" fill="none"/>
+                <path d="M155 107 L155 112" stroke="#2b2d42" stroke-width="2" fill="none"/>
+                <path d="M125 95 L130 100 L120 100 Z" stroke="none" fill="#4361ee"/>
+                <path d="M155 105 L170 95 L170 105 Z" stroke="none" fill="#4361ee"/>
+                
+                <!-- Vertical connections -->
+                <path d="M90 20 L90 60" stroke="#4361ee" stroke-width="3" fill="none"/>
+                <path d="M210 20 L210 60" stroke="#4361ee" stroke-width="3" fill="none"/>
+                <path d="M90 60 L90 100" stroke="#4361ee" stroke-width="3" fill="none"/>
+                <path d="M210 60 L210 100" stroke="#4361ee" stroke-width="3" fill="none"/>
+                
+                <!-- Input/Output markers -->
+                <path d="M10 55 L15 60 L10 65 Z" stroke="none" fill="#4361ee"/>
+                <path d="M285 55 L280 60 L285 65 Z" stroke="none" fill="#4361ee"/>
+            </svg>
+            `;
+        }
+
+        // SVG для одинарного резистора (одинаковые)
+        function getSingleResistorSVG() {
+            return `
+            <svg class="circuit-svg" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Main wires -->
+                <path d="M15 50 L100 50" stroke="#06d6a0" stroke-width="3" fill="none"/>
+                <path d="M200 50 L285 50" stroke="#06d6a0" stroke-width="3" fill="none"/>
+                
+                <!-- Resistor -->
+                <path d="M100 50 L200 50" stroke="#2b2d42" stroke-width="2" fill="none"/>
+                <rect x="115" y="30" width="70" height="40" stroke="#2b2d42" stroke-width="2" fill="#f0f0f0"/>
+                <path d="M145 27 L145 35" stroke="#2b2d42" stroke-width="2" fill="none"/>
+                <path d="M155 65 L155 73" stroke="#2b2d42" stroke-width="2" fill="none"/>
+                <path d="M145 35 L155 45 L145 55 Z" stroke="none" fill="#06d6a0"/>
+                <path d="M155 45 L170 35 L170 55 Z" stroke="none" fill="#06d6a0"/>
+                
+                <!-- Input/Output markers -->
+                <path d="M10 45 L15 50 L10 55 Z" stroke="none" fill="#06d6a0"/>
+                <path d="M285 45 L280 50 L285 55 Z" stroke="none" fill="#06d6a0"/>
+            </svg>
+            `;
+        }
 
         // Рассчет параллельного сопротивления
         function parallelResistance(r1, r2) {
@@ -424,52 +497,68 @@
                 const series = RESISTOR_SERIES[seriesSelect.value];
                 
                 // Поиск решений
-                const { resistorValue, resultRes, error, errorPercent, isExact } = 
-                    findSameSolution(targetRes, series);
-                
-                const different = findDifferentSolution(targetRes, series);
+                const sameSolution = findSameSolution(targetRes, series);
+                const differentSolution = findDifferentSolution(targetRes, series);
                 
                 // Отрисовка основного решения
-                const differentHasLessError = different.error < error;
+                const differentHasLessError = differentSolution.error < sameSolution.error;
+                
                 mainCard.classList.remove('secondary');
                 mainCard.classList.add('primary');
                 
-                mainBadge.textContent = differentHasLessError ? 
-                    "ОСНОВНОЕ РЕШЕНИЕ" : "РЕКОМЕНДУЕМОЕ";
+                mainBadge.textContent = "РЕКОМЕНДУЕМОЕ";
                 
-                mainTitle.textContent = differentHasLessError ? 
-                    "Оптимальное решение (разные резисторы)" : 
-                    "Идеальное решение (одинаковые)";
+                mainTitle.textContent = "Оптимальное решение";
                 
-                mainContent.innerHTML = `
-                    ${differentHasLessError ? `
-                        <div class="value-group">
-                            <div class="value-label">Первый резистор (R₁)</div>
-                            <div class="value"><i class="circuit-icon">↯</i> <span>${formatResistance(different.r1)}</span></div>
+                mainContent.innerHTML = differentHasLessError ? `
+                    <div class="resistor-container">
+                        ${getParallelResistorsSVG()}
+                        <div class="resistor-single">
+                            <div class="value">
+                                R₁ = ${formatResistance(differentSolution.r1)}
+                            </div>
+                            <div class="value">
+                                R₂ = ${formatResistance(differentSolution.r2)}
+                            </div>
                         </div>
-                        <div class="value-group">
-                            <div class="value-label">Второй резистор (R₂)</div>
-                            <div class="value"><i class="circuit-icon">↯</i> <span>${formatResistance(different.r2)}</span></div>
-                        </div>
-                    ` : `
-                        <div class="value-group">
-                            <div class="value-label">Одинаковые резисторы (R₁ = R₂)</div>
-                            <div class="value"><i class="circuit-icon">↯↯</i> <span>${formatResistance(resistorValue)}</span></div>
-                        </div>
-                    `}
+                    </div>
                     
                     <div class="value-group">
-                        <div class="value-label">Реальное сопротивление</div>
-                        <div class="value">🔍 <span>${formatResistance(differentHasLessError ? different.resultRes : resultRes)}</span></div>
+                        <div class="value-label">Суммарное сопротивление</div>
+                        <div class="value">🔍 <span>${formatResistance(differentSolution.resultRes)}</span></div>
                     </div>
                     
                     <div class="value-group">
                         <div class="value-label">Погрешность</div>
-                        <div class="value">⚖ <span>${(differentHasLessError ? different.error : error).toFixed(6)} Ом (${(differentHasLessError ? different.errorPercent : errorPercent).toFixed(2)}%)</span></div>
+                        <div class="value">⚖ <span>${differentSolution.error.toFixed(6)} Ом (${differentSolution.errorPercent.toFixed(2)}%)</span></div>
                     </div>
                     
                     <div class="formula-box">
-                        R = ${differentHasLessError ? '(R₁ × R₂) / (R₁ + R₂)' : 'R₁ / 2'}
+                        R = (R₁ × R₂) / (R₁ + R₂)
+                    </div>
+                ` : `
+                    <div class="resistor-container">
+                        ${getSingleResistorSVG()}
+                        <div class="value">
+                            R = ${formatResistance(sameSolution.resistorValue)}
+                        </div>
+                        <div class="value">
+                            (2 резистора параллельно)
+                        </div>
+                    </div>
+                    
+                    <div class="value-group">
+                        <div class="value-label">Суммарное сопротивление</div>
+                        <div class="value">🔍 <span>${formatResistance(sameSolution.resultRes)}</span></div>
+                    </div>
+                    
+                    <div class="value-group">
+                        <div class="value-label">Погрешность</div>
+                        <div class="value">⚖ <span>${sameSolution.error.toFixed(6)} Ом (${sameSolution.errorPercent.toFixed(2)}%)</span></div>
+                    </div>
+                    
+                    <div class="formula-box">
+                        R = R / 2 (параллельное соединение)
                     </div>
                 `;
                 
@@ -477,32 +566,39 @@
                 sameBadgeContainer.innerHTML = '';
                 const badge = document.createElement('span');
                 badge.className = 'best-badge';
-                badge.textContent = isExact ? 'ИДЕАЛЬНОЕ' : 'ПРИБЛИЗИТЕЛЬНОЕ';
+                badge.textContent = sameSolution.isExact ? 'ИДЕАЛЬНОЕ' : 'ПРИБЛИЗИТЕЛЬНОЕ';
                 sameBadgeContainer.appendChild(badge);
                 
                 sameTitle.textContent = "Одинаковые резисторы";
-                sameCard.style.display = isExact && !differentHasLessError ? 'none' : 'block';
+                sameCard.style.display = sameSolution.isExact && !differentHasLessError ? 'none' : 'block';
                 
-                sameContent.innerHTML = `
-                    <div class="value-group">
-                        <div class="value-label">Одинаковые резисторы</div>
-                        <div class="value"><i class="circuit-icon">↯↯</i> <span>${formatResistance(resistorValue)}</span></div>
+                sameContent.innerHTML = sameSolution.isExact && !differentHasLessError ? 
+                    `<div class="exact-match">Точное решение уже показано как основное</div>` :
+                `
+                    <div class="resistor-container">
+                        ${getSingleResistorSVG()}
+                        <div class="value">
+                            R = ${formatResistance(sameSolution.resistorValue)}
+                        </div>
+                        <div class="value">
+                            (2 одинаковых резистора)
+                        </div>
                     </div>
                     
                     <div class="value-group">
-                        <div class="value-label">Реальное сопротивление</div>
-                        <div class="value">🔍 <span>${formatResistance(resultRes)}</span></div>
+                        <div class="value-label">Суммарное сопротивление</div>
+                        <div class="value">🔍 <span>${formatResistance(sameSolution.resultRes)}</span></div>
                     </div>
                     
                     <div class="value-group">
                         <div class="value-label">Погрешность</div>
-                        <div class="value">⚖ <span>${error.toFixed(6)} Ом (${errorPercent.toFixed(2)}%)</span></div>
+                        <div class="value">⚖ <span>${sameSolution.error.toFixed(6)} Ом (${sameSolution.errorPercent.toFixed(2)}%)</span></div>
                     </div>
                     
-                    ${isExact ? `<div class="exact-match">Точное решение! Реальные параметры совпадают с расчётными</div>` : ''}
+                    ${sameSolution.isExact ? `<div class="exact-match">Точное решение! Реальные параметры совпадают с расчётными</div>` : ''}
                     
                     <div class="formula-box">
-                        R = R₁ / 2
+                        R = R / 2 (сдвоенные резисторы)
                     </div>
                 `;
             }
@@ -514,7 +610,7 @@
             });
             seriesSelect.addEventListener('change', calculate);
             
-            // Первоначальный расчет
+            // Первоначальный расчет (для 100 Ом)
             calculate();
         });
     </script>
