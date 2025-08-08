@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -326,28 +327,32 @@
         </div>
     </div>
     <script>
-        // Расширенные ряды резисторов
-        const RESISTOR_SERIES = {
+        // Расширенные ряды резисторов с декадами
+        function generateSeries(baseValues, decades) {
+            const series = [];
+            for (let i = 0; i < baseValues.length; i++) {
+                for (const decade of decades) {
+                    const value = baseValues[i] * decade;
+                    if (value >= 0.1 && value <= 10000000) {
+                        series.push(value);
+                    }
+                }
+            }
+            return series;
+        }
+
+        // Базовые значения для рядов
+        const BASE_SERIES = {
             E24: [
-                1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4,
-                2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2,
-                6.8, 7.5, 8.2, 9.1, 10, 11, 12, 13, 15, 16, 18, 
-                20, 22, 24, 27, 30, 33, 36, 39, 43, 47, 51, 56, 
-                62, 68, 75, 82, 91, 100, 110, 120, 130, 150, 160, 180, 
-                200, 220, 240, 270, 300, 330, 360, 390, 430, 470, 510, 560, 
-                620, 680, 750, 820, 910
+                1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 
+                3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1
             ],
             E48: [
-                1.00, 1.05, 1.10, 1.15, 1.21, 1.27, 1.33, 1.40, 1.47, 1.54,
-                1.62, 1.69, 1.78, 1.87, 1.96, 2.05, 2.15, 2.26, 2.37, 2.49,
-                2.61, 2.74, 2.87, 3.01, 3.16, 3.32, 3.48, 3.65, 3.83, 4.02,
-                4.22, 4.42, 4.64, 4.87, 5.11, 5.36, 5.62, 5.90, 6.19, 6.49,
-                6.81, 7.15, 7.50, 7.87, 8.25, 8.66, 9.09, 9.53, 10.0, 10.5,
-                11.0, 11.5, 12.1, 12.7, 13.3, 14.0, 14.7, 15.4, 16.2, 16.9,
-                17.8, 18.7, 19.6, 20.5, 21.5, 22.6, 23.7, 24.9, 26.1, 27.4,
-                28.7, 30.1, 31.6, 33.2, 34.8, 36.5, 38.3, 40.2, 42.2, 44.2,
-                46.4, 48.7, 51.1, 53.6, 56.2, 59.0, 61.9, 64.9, 68.1, 71.5,
-                75.0, 78.7, 82.5, 86.6, 90.9, 95.3
+                1.00, 1.05, 1.10, 1.15, 1.21, 1.27, 1.33, 1.40, 1.47, 1.54, 
+                1.62, 1.69, 1.78, 1.87, 1.96, 2.05, 2.15, 2.26, 2.37, 2.49, 
+                2.61, 2.74, 2.87, 3.01, 3.16, 3.32, 3.48, 3.65, 3.83, 4.02, 
+                4.22, 4.42, 4.64, 4.87, 5.11, 5.36, 5.62, 5.90, 6.19, 6.49, 
+                6.81, 7.15, 7.50, 7.87, 8.25, 8.66, 9.09, 9.53
             ],
             E96: [
                 1.00, 1.02, 1.05, 1.07, 1.10, 1.13, 1.15, 1.18, 1.21, 1.24,
@@ -359,20 +364,20 @@
                 4.22, 4.32, 4.42, 4.53, 4.64, 4.75, 4.87, 4.99, 5.11, 5.23,
                 5.36, 5.49, 5.62, 5.76, 5.90, 6.04, 6.19, 6.34, 6.49, 6.65,
                 6.81, 6.98, 7.15, 7.32, 7.50, 7.68, 7.87, 8.06, 8.25, 8.45,
-                8.66, 8.87, 9.09, 9.31, 9.53, 9.76, 10.0, 10.2, 10.5, 10.7,
-                11.0, 11.3, 11.5, 11.8, 12.1, 12.4, 12.7, 13.0, 13.3, 13.7,
-                14.0, 14.3, 14.7, 15.0, 15.4, 15.8, 16.2, 16.5, 16.9, 17.4,
-                17.8, 18.2, 18.7, 19.1, 19.6, 20.0, 20.5, 21.0, 21.5, 22.1,
-                22.6, 23.2, 23.7, 24.3, 24.9, 25.5, 26.1, 26.7, 27.4, 28.0,
-                28.7, 29.4, 30.1, 30.9, 31.6, 32.4, 33.2, 34.0, 34.8, 35.7,
-                36.5, 37.4, 38.3, 39.2, 40.2, 41.2, 42.2, 43.2, 44.2, 45.3,
-                46.4, 47.5, 48.7, 49.9, 51.1, 52.3, 53.6, 54.9, 56.2, 57.6,
-                59.0, 60.4, 61.9, 63.4, 64.9, 66.5, 68.1, 69.8, 71.5, 73.2,
-                75.0, 76.8, 78.7, 80.6, 82.5, 84.5, 86.6, 88.7, 90.9, 93.1
+                8.66, 8.87, 9.09, 9.31, 9.53, 9.76
             ]
         };
 
-        // SVG для параллельных резисторов (исправленный)
+        const DECADES = [0.1, 1, 10, 100, 1000, 10000, 100000, 1000000];
+
+        // Генерация полных серий с декадами
+        const RESISTOR_SERIES = {
+            E24: generateSeries(BASE_SERIES.E24, DECADES),
+            E48: generateSeries(BASE_SERIES.E48, DECADES),
+            E96: generateSeries(BASE_SERIES.E96, DECADES)
+        };
+
+        // SVG для параллельных резисторов
         function getParallelResistorsSVG() {
             return `
             <svg class="circuit-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
@@ -402,7 +407,7 @@
             </svg>
             `;
         }
-
+        
         // SVG для одинарного резистора 
         function getSingleResistorSVG() {
             return `
@@ -425,42 +430,66 @@
             </svg>
             `;
         }
-
+        
         // Рассчет параллельного сопротивления
         function parallelResistance(r1, r2) {
             return (r1 * r2) / (r1 + r2);
         }
-
+        
         // Поиск ближайшего значения
         function findNearestValue(arr, target) {
             return arr.reduce((prev, curr) => {
                 return (Math.abs(curr - target) < Math.abs(prev - target)) ? curr : prev;
             });
         }
-
+        
         // Форматирование величины сопротивления
         function formatResistance(value) {
+            if (typeof value !== 'number' || isNaN(value) || !isFinite(value)) {
+                return "N/A";
+            }
             if (value >= 1000000) return (value / 1000000).toFixed(3) + " МОм";
             if (value >= 1000) return (value / 1000).toFixed(3) + " кОм";
             return value.toFixed(2) + " Ом";
         }
-
+        
         // Поиск решения с разными резисторами
         function findDifferentSolution(target, series) {
-            let best = { error: Infinity };
+            let best = { 
+                r1: 0, 
+                r2: 0, 
+                resultRes: 0, 
+                error: Infinity, 
+                errorPercent: Infinity 
+            };
             
+            // Проверяем точное решение с двумя одинаковыми резисторами
+            const exact2x = target * 2;
+            const r2x = findNearestValue(series, exact2x);
+            const exactSolution = {
+                r1: r2x,
+                r2: r2x,
+                resultRes: r2x / 2,
+                error: Math.abs(r2x / 2 - target),
+                errorPercent: Math.abs(r2x / 2 - target) / target * 100
+            };
+            
+            // Проверяем точное решение с двумя разными резисторами
             for (let i = 0; i < series.length; i++) {
                 const r1 = series[i];
-                if (r1 <= target) continue;  // Фильтр малых значений
+                
+                // Условия для пропуска
+                if (r1 <= 0 || r1 === target || r1 >= 10000000) continue;
                 
                 const idealR2 = (r1 * target) / (r1 - target);
-                if (idealR2 <= 0 || !isFinite(idealR2)) continue;
+                
+                if (idealR2 <= 0 || idealR2 > 10000000 || !isFinite(idealR2)) continue;
                 
                 const r2 = findNearestValue(series, idealR2);
                 const resultRes = parallelResistance(r1, r2);
                 const error = Math.abs(resultRes - target);
                 
-                if (error < best.error) {
+                if (error < best.error || (Math.abs(error - best.error) < 1e-9 && best.error !== 0)) {
                     best = { 
                         r1, 
                         r2, 
@@ -471,9 +500,14 @@
                 }
             }
             
-            return best;
+            // Сравнение с одинаковым решением
+            if (exactSolution.error < best.error) {
+                return exactSolution;
+            }
+            
+            return isFinite(best.error) ? best : exactSolution;
         }
-
+        
         // Поиск решения с одинаковыми резисторами
         function findSameSolution(target, series) {
             const sameResistorValue = target * 2;
@@ -481,16 +515,17 @@
             const resultRes = resistorValue / 2;
             const error = Math.abs(resultRes - target);
             const errorPercent = (error / target) * 100;
+            const isExact = Math.abs(sameResistorValue - resistorValue) < 1e-5;
             
             return {
                 resistorValue,
                 resultRes,
                 error,
                 errorPercent,
-                isExact: Math.abs(sameResistorValue - resistorValue) < 1e-5
+                isExact
             };
         }
-
+        
         // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', () => {
             const targetInput = document.getElementById('targetResistance');
@@ -527,72 +562,77 @@
                 const sameSolution = findSameSolution(targetRes, series);
                 const differentSolution = findDifferentSolution(targetRes, series);
                 
-                // Отрисовка основного решения
-                mainBadge.textContent = "РЕКОМЕНДУЕМОЕ";
-                mainTitle.textContent = "Оптимальное решение";
+                // Определяем, какое решение точнее
+                const usingDifferentSolution = differentSolution.error <= sameSolution.error;
+                const finalSolution = usingDifferentSolution ? differentSolution : sameSolution;
+                const solutionData = finalSolution;
                 
-                if (sameSolution.error <= differentSolution.error && sameSolution.errorPercent < 5.0) {
-                    // Решение с одинаковыми резисторами лучше
-                    mainContent.innerHTML = `
-                        <div class="resistor-container">
-                            ${getSingleResistorSVG()}
-                            <div class="resistor-single">
-                                <div class="value">
-                                    R = ${formatResistance(sameSolution.resistorValue)}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="value-group">
-                            <div class="value-label">Суммарное сопротивление</div>
-                            <div class="value">${formatResistance(sameSolution.resultRes)}</div>
-                        </div>
-                        
-                        <div class="value-group">
-                            <div class="value-label">Погрешность</div>
-                            <div class="value">${sameSolution.error.toFixed(6)} Ом (${sameSolution.errorPercent.toFixed(2)}%)</div>
-                        </div>
-                        
-                        <div class="formula-box">
-                            R = Rₒ / 2 (сдвоенные резисторы)
-                        </div>
-                    `;
-                } else {
-                    // Решение с разными резисторами лучше
+                // Отрисовка основного решения
+                mainBadge.textContent = usingDifferentSolution ? "ОПТИМАЛЬНО" : "АЛЬТЕРНАТИВА";
+                mainTitle.textContent = "Основное решение";
+                
+                if (usingDifferentSolution) {
+                    const different = finalSolution;
                     mainContent.innerHTML = `
                         <div class="resistor-container">
                             ${getParallelResistorsSVG()}
                             <div class="resistor-single">
                                 <div class="value">
-                                    R₁ = ${formatResistance(differentSolution.r1)}
+                                    R₁ = ${formatResistance(different.r1)}
                                 </div>
                                 <div class="value">
-                                    R₂ = ${formatResistance(differentSolution.r2)}
+                                    R₂ = ${formatResistance(different.r2)}
                                 </div>
                             </div>
                         </div>
                         
                         <div class="value-group">
                             <div class="value-label">Суммарное сопротивление</div>
-                            <div class="value">${formatResistance(differentSolution.resultRes)}</div>
+                            <div class="value">${formatResistance(different.resultRes)}</div>
                         </div>
                         
                         <div class="value-group">
                             <div class="value-label">Погрешность</div>
-                            <div class="value">${differentSolution.error.toFixed(6)} Ом (${differentSolution.errorPercent.toFixed(2)}%)</div>
+                            <div class="value">${different.error.toFixed(6)} Ом (${different.errorPercent.toFixed(2)}%)</div>
                         </div>
                         
                         <div class="formula-box">
-                            R = (R₁ × R₂) / (R₁ + R₂)
+                            R<sub>общ</sub> = (R₁ × R₂) / (R₁ + R₂)
+                        </div>
+                    `;
+                } else {
+                    const same = finalSolution;
+                    mainContent.innerHTML = `
+                        <div class="resistor-container">
+                            ${getSingleResistorSVG()}
+                            <div class="resistor-single">
+                                <div class="value">
+                                    R = ${formatResistance(same.resistorValue)}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="value-group">
+                            <div class="value-label">Суммарное сопротивление</div>
+                            <div class="value">${formatResistance(same.resultRes)}</div>
+                        </div>
+                        
+                        <div class="value-group">
+                            <div class="value-label">Погрешность</div>
+                            <div class="value">${same.error.toFixed(6)} Ом (${same.errorPercent.toFixed(2)}%)</div>
+                        </div>
+                        
+                        <div class="formula-box">
+                            R<sub>общ</sub> = R / 2 (два резистора одинакового номинала)
                         </div>
                     `;
                 }
                 
-                // Отрисовка решения с одинаковыми резисторами
+                // Отрисовка блока с одинаковыми резисторами
                 sameBadgeContainer.innerHTML = '';
                 const badge = document.createElement('span');
                 badge.className = 'best-badge';
-                badge.textContent = sameSolution.isExact ? 'ИДЕАЛЬНОЕ' : 'АЛЬТЕРНАТИВА';
+                badge.textContent = sameSolution.isExact ? 'ТОЧНОЕ СОВПАДЕНИЕ' : 'ОТДЕЛЬНОЕ РЕШЕНИЕ';
                 sameBadgeContainer.appendChild(badge);
                 
                 sameTitle.textContent = "Одинаковые резисторы";
@@ -621,7 +661,7 @@
                     ${sameSolution.isExact ? `<div class="exact-match">Точное совпадение!</div>` : ''}
                     
                     <div class="formula-box">
-                        R = Rₒ / 2 (сдвоенные резисторы)
+                        R<sub>общ</sub> = R / 2 (два резистора одинакового номинала)
                     </div>
                 `;
             }
