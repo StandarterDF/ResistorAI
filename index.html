@@ -6,13 +6,16 @@
     <title>Калькулятор параллельных резисторов</title>
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a0ca3;
-            --secondary: #06d6a0;
-            --gray-dark: #2b2d42;
-            --gray: #8d99ae;
-            --light: #f8f9fa;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --primary: #5290f9;
+            --primary-dark: #4a74e3;
+            --secondary: #0cf0b0;
+            --secondary-dark: #0ad6a0;
+            --dark-bg: #121826;
+            --dark-bg-light: #1e293b;
+            --dark-bg-lighter: #2d3748;
+            --text-main: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --shadow: 0 10px 30px rgba(0,0,0,0.25);
             --radius: 16px;
         }
         * {
@@ -22,31 +25,34 @@
             font-family: 'Segoe UI', Tahoma, sans-serif;
         }
         body {
-            background: linear-gradient(120deg, #4381ee, #4f2de4);
+            background: linear-gradient(135deg, #0f1c2e, #162438);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            color: var(--gray-dark);
+            color: var(--text-main);
         }
         .container {
-            background: white;
+            background: var(--dark-bg-light);
             width: 100%;
             max-width: 700px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .header {
-            background: var(--primary);
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
             color: white;
             padding: 28px;
             text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         h1 {
             font-size: 2.2rem;
             margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         .subtitle {
             font-size: 1.1rem;
@@ -62,7 +68,7 @@
             display: block;
             margin-bottom: 10px;
             font-weight: 600;
-            color: var(--gray-dark);
+            color: var(--text-main);
             font-size: 1.1rem;
         }
         .input-group {
@@ -73,15 +79,21 @@
         input, select {
             flex: 1;
             padding: 16px;
-            border: 2px solid #e2e8f0;
+            background: var(--dark-bg);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px;
             font-size: 1.1rem;
             transition: all 0.3s;
+            color: var(--text-main);
         }
         input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 0 0 3px rgba(82, 144, 249, 0.3);
+        }
+        input:-webkit-autofill {
+            -webkit-text-fill-color: var(--text-main) !important;
+            -webkit-box-shadow: 0 0 0 30px var(--dark-bg) inset !important;
         }
         button {
             background: linear-gradient(to right, var(--primary), var(--primary-dark));
@@ -95,10 +107,14 @@
             transition: all 0.3s;
             width: 100%;
             letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(82, 144, 249, 0.25);
         }
         button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 15px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(82, 144, 249, 0.35);
+        }
+        button:active {
+            transform: translateY(1px);
         }
         .results {
             padding: 0 30px 30px;
@@ -107,7 +123,7 @@
             gap: 25px;
         }
         .solution-card {
-            background: var(--light);
+            background: var(--dark-bg-lighter);
             border-radius: var(--radius);
             padding: 30px;
             border-left: 5px solid;
@@ -124,6 +140,7 @@
         }
         .solution-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.35);
         }
         .card-header {
             display: flex;
@@ -142,7 +159,7 @@
         }
         .best-badge {
             background: var(--secondary);
-            color: white;
+            color: #121826;
             padding: 8px 18px;
             border-radius: 100px;
             font-weight: bold;
@@ -150,6 +167,7 @@
         }
         .primary-badge {
             background: var(--primary);
+            color: #fff;
         }
         .value-group {
             margin-bottom: 18px;
@@ -158,46 +176,51 @@
             font-weight: 600;
             margin-bottom: 8px;
             font-size: 1.1rem;
-            color: var(--gray);
+            color: var(--text-secondary);
         }
         .value {
             font-size: 1.7rem;
             font-weight: 700;
-            color: var(--gray-dark);
+            color: var(--text-main);
             display: flex;
             align-items: center;
             gap: 10px;
         }
         .circuit-svg {
-            width: 150px;
-            height: 80px;
-            margin-bottom: 15px;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto 20px;
+            display: block;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
         }
         .formula-box {
-            background: rgba(67, 97, 238, 0.1);
+            background: rgba(255,255,255,0.05);
             padding: 20px;
             margin-top: 25px;
             border-radius: 12px;
             text-align: center;
             font-family: monospace;
             font-size: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         .secondary .formula-box {
-            background: rgba(6, 214, 160, 0.1);
+            background: rgba(12, 240, 176, 0.08);
         }
         .error {
-            background: #ffeded;
-            color: #e53e3e;
+            background: rgba(229, 62, 62, 0.15);
+            color: #ff9191;
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 25px;
             display: none;
             font-weight: 500;
+            border: 1px solid rgba(229, 62, 62, 0.3);
         }
         .exact-match {
-            color: #06d6a0;
+            color: var(--secondary);
             font-weight: 600;
             margin-top: 10px;
+            text-align: center;
         }
         .resistor-container {
             display: flex;
@@ -211,6 +234,8 @@
             flex-direction: column;
             align-items: center;
             gap: 5px;
+            text-align: center;
+            margin-top: 10px;
         }
         @media (max-width: 768px) {
             .input-group {
@@ -223,8 +248,7 @@
                 grid-template-columns: 1fr;
             }
             .circuit-svg {
-                width: 100%;
-                max-width: 300px;
+                max-width: 280px;
             }
         }
     </style>
@@ -339,39 +363,41 @@
             ]
         };
 
-        // SVG для параллельных резисторов
+        // SVG для параллельных резисторов (темная тема)
         function getParallelResistorsSVG() {
             return `
-            <svg class="circuit-svg" viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+            <svg class="circuit-svg" viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="wireGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#5290f9" />
+                        <stop offset="100%" stop-color="#4a74e3" />
+                    </linearGradient>
+                </defs>
                 <!-- Main wires -->
-                <path d="M15 60 L90 60" stroke="#4361ee" stroke-width="3" fill="none"/>
-                <path d="M210 60 L285 60" stroke="#4361ee" stroke-width="3" fill="none"/>
+                <path d="M15 65 L90 65" stroke="url(#wireGradient)" stroke-width="3" fill="none"/>
+                <path d="M210 65 L285 65" stroke="url(#wireGradient)" stroke-width="3" fill="none"/>
                 
                 <!-- Resistor 1 -->
-                <path d="M90 20 L210 20" stroke="#2b2d42" stroke-width="2" fill="none"/>
-                <rect x="100" y="10" width="80" height="20" stroke="#2b2d42" stroke-width="2" fill="#f0f0f0"/>
-                <path d="M125 7 L125 12" stroke="#2b2d42" stroke-width="2" fill="none"/>
-                <path d="M155 27 L155 32" stroke="#2b2d42" stroke-width="2" fill="none"/>
-                <path d="M125 15 L130 20 L120 20 Z" stroke="none" fill="#4361ee"/>
-                <path d="M155 25 L170 15 L170 25 Z" stroke="none" fill="#4361ee"/>
+                <path d="M90 25 L210 25" stroke="#a0aec0" stroke-width="2" fill="none"/>
+                <rect x="100" y="15" width="80" height="20" stroke="#5290f9" stroke-width="1.5" fill="#1e293b" rx="4"/>
+                <rect x="100" y="15" width="5" height="20" fill="url(#wireGradient)"/>
+                <rect x="175" y="15" width="5" height="20" fill="url(#wireGradient)"/>
                 
                 <!-- Resistor 2 -->
-                <path d="M90 100 L210 100" stroke="#2b2d42" stroke-width="2" fill="none"/>
-                <rect x="100" y="90" width="80" height="20" stroke="#2b2d42" stroke-width="2" fill="#f0f0f0"/>
-                <path d="M125 87 L125 92" stroke="#2b2d42" stroke-width="2" fill="none"/>
-                <path d="M155 107 L155 112" stroke="#2b2d42" stroke-width="2" fill="none"/>
-                <path d="M125 95 L130 100 L120 100 Z" stroke="none" fill="#4361ee"/>
-                <path d="M155 105 L170 95 L170 105 Z" stroke="none" fill="#4361ee"/>
+                <path d="M90 105 L210 105" stroke="#a0aec0" stroke-width="2" fill="none"/>
+                <rect x="100" y="95" width="80" height="20" stroke="#5290f9" stroke-width="1.5" fill="#1e293b" rx="4"/>
+                <rect x="100" y="95" width="5" height="20" fill="url(#wireGradient)"/>
+                <rect x="175" y="95" width="5" height="20" fill="url(#wireGradient)"/>
                 
                 <!-- Vertical connections -->
-                <path d="M90 20 L90 60" stroke="#4361ee" stroke-width="3" fill="none"/>
-                <path d="M210 20 L210 60" stroke="#4361ee" stroke-width="3" fill="none"/>
-                <path d="M90 60 L90 100" stroke="#4361ee" stroke-width="3" fill="none"/>
-                <path d="M210 60 L210 100" stroke="#4361ee" stroke-width="3" fill="none"/>
+                <path d="M90 25 L90 65" stroke="url(#wireGradient)" stroke-width="3" fill="none"/>
+                <path d="M210 25 L210 65" stroke="url(#wireGradient)" stroke-width="3" fill="none"/>
+                <path d="M90 65 L90 105" stroke="url(#wireGradient)" stroke-width="3" fill="none"/>
+                <path d="M210 65 L210 105" stroke="url(#wireGradient)" stroke-width="3" fill="none"/>
                 
                 <!-- Input/Output markers -->
-                <path d="M10 55 L15 60 L10 65 Z" stroke="none" fill="#4361ee"/>
-                <path d="M285 55 L280 60 L285 65 Z" stroke="none" fill="#4361ee"/>
+                <path d="M10 60 L15 65 L10 70 Z" stroke="none" fill="url(#wireGradient)"/>
+                <path d="M285 60 L280 65 L285 70 Z" stroke="none" fill="url(#wireGradient)"/>
             </svg>
             `;
         }
@@ -379,22 +405,26 @@
         // SVG для одинарного резистора (одинаковые)
         function getSingleResistorSVG() {
             return `
-            <svg class="circuit-svg" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+            <svg class="circuit-svg" viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="resistorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#0cf0b0" />
+                        <stop offset="100%" stop-color="#0ad6a0" />
+                    </linearGradient>
+                </defs>
                 <!-- Main wires -->
-                <path d="M15 50 L100 50" stroke="#06d6a0" stroke-width="3" fill="none"/>
-                <path d="M200 50 L285 50" stroke="#06d6a0" stroke-width="3" fill="none"/>
+                <path d="M15 60 L100 60" stroke="url(#resistorGradient)" stroke-width="3" fill="none"/>
+                <path d="M200 60 L285 60" stroke="url(#resistorGradient)" stroke-width="3" fill="none"/>
                 
                 <!-- Resistor -->
-                <path d="M100 50 L200 50" stroke="#2b2d42" stroke-width="2" fill="none"/>
-                <rect x="115" y="30" width="70" height="40" stroke="#2b2d42" stroke-width="2" fill="#f0f0f0"/>
-                <path d="M145 27 L145 35" stroke="#2b2d42" stroke-width="2" fill="none"/>
-                <path d="M155 65 L155 73" stroke="#2b2d42" stroke-width="2" fill="none"/>
-                <path d="M145 35 L155 45 L145 55 Z" stroke="none" fill="#06d6a0"/>
-                <path d="M155 45 L170 35 L170 55 Z" stroke="none" fill="#06d6a0"/>
+                <path d="M100 60 L200 60" stroke="#a0aec0" stroke-width="2" fill="none"/>
+                <rect x="115" y="40" width="70" height="40" stroke="#0cf0b0" stroke-width="1.5" fill="#1e293b" rx="4"/>
+                <rect x="115" y="40" width="5" height="40" fill="url(#resistorGradient)"/>
+                <rect x="180" y="40" width="5" height="40" fill="url(#resistorGradient)"/>
                 
                 <!-- Input/Output markers -->
-                <path d="M10 45 L15 50 L10 55 Z" stroke="none" fill="#06d6a0"/>
-                <path d="M285 45 L280 50 L285 55 Z" stroke="none" fill="#06d6a0"/>
+                <path d="M10 55 L15 60 L10 65 Z" stroke="none" fill="url(#resistorGradient)"/>
+                <path d="M285 55 L280 60 L285 65 Z" stroke="none" fill="url(#resistorGradient)"/>
             </svg>
             `;
         }
@@ -424,7 +454,7 @@
             
             for (let i = 0; i < series.length; i++) {
                 const r1 = series[i];
-                if (r1 <= target) continue;  // Фильтр малых значений
+                if (r1 <= target * 0.5) continue;
                 
                 const idealR2 = (r1 * target) / (r1 - target);
                 if (idealR2 <= 0 || !isFinite(idealR2)) continue;
@@ -501,104 +531,109 @@
                 const differentSolution = findDifferentSolution(targetRes, series);
                 
                 // Отрисовка основного решения
-                const differentHasLessError = differentSolution.error < sameSolution.error;
-                
                 mainCard.classList.remove('secondary');
                 mainCard.classList.add('primary');
                 
                 mainBadge.textContent = "РЕКОМЕНДУЕМОЕ";
-                
                 mainTitle.textContent = "Оптимальное решение";
                 
-                mainContent.innerHTML = differentHasLessError ? `
-                    <div class="resistor-container">
-                        ${getParallelResistorsSVG()}
-                        <div class="resistor-single">
-                            <div class="value">
-                                R₁ = ${formatResistance(differentSolution.r1)}
+                if (sameSolution.error <= differentSolution.error && sameSolution.errorPercent < 5.0) {
+                    // Решение с одинаковыми резисторами лучше
+                    mainContent.innerHTML = `
+                        <div class="resistor-container">
+                            ${getSingleResistorSVG()}
+                            <div class="resistor-single">
+                                <div class="value">
+                                    R = ${formatResistance(sameSolution.resistorValue)}
+                                </div>
+                                <div class="value-label">
+                                    2 одинаковых резистора
+                                </div>
                             </div>
-                            <div class="value">
-                                R₂ = ${formatResistance(differentSolution.r2)}
+                        </div>
+                        
+                        <div class="value-group">
+                            <div class="value-label">Суммарное сопротивление</div>
+                            <div class="value"><span>${formatResistance(sameSolution.resultRes)}</span></div>
+                        </div>
+                        
+                        <div class="value-group">
+                            <div class="value-label">Погрешность</div>
+                            <div class="value"><span>${sameSolution.error.toFixed(6)} Ом (${sameSolution.errorPercent.toFixed(2)}%)</span></div>
+                        </div>
+                        
+                        <div class="formula-box">
+                            R = Rₒ / 2 (параллельное соединение)
+                        </div>
+                    `;
+                } else {
+                    // Решение с разными резисторами лучше
+                    mainContent.innerHTML = `
+                        <div class="resistor-container">
+                            ${getParallelResistorsSVG()}
+                            <div class="resistor-single">
+                                <div class="value">
+                                    R₁ = ${formatResistance(differentSolution.r1)}
+                                </div>
+                                <div class="value">
+                                    R₂ = ${formatResistance(differentSolution.r2)}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="value-group">
-                        <div class="value-label">Суммарное сопротивление</div>
-                        <div class="value">🔍 <span>${formatResistance(differentSolution.resultRes)}</span></div>
-                    </div>
-                    
-                    <div class="value-group">
-                        <div class="value-label">Погрешность</div>
-                        <div class="value">⚖ <span>${differentSolution.error.toFixed(6)} Ом (${differentSolution.errorPercent.toFixed(2)}%)</span></div>
-                    </div>
-                    
-                    <div class="formula-box">
-                        R = (R₁ × R₂) / (R₁ + R₂)
-                    </div>
-                ` : `
-                    <div class="resistor-container">
-                        ${getSingleResistorSVG()}
-                        <div class="value">
-                            R = ${formatResistance(sameSolution.resistorValue)}
+                        
+                        <div class="value-group">
+                            <div class="value-label">Суммарное сопротивление</div>
+                            <div class="value"><span>${formatResistance(differentSolution.resultRes)}</span></div>
                         </div>
-                        <div class="value">
-                            (2 резистора параллельно)
+                        
+                        <div class="value-group">
+                            <div class="value-label">Погрешность</div>
+                            <div class="value"><span>${differentSolution.error.toFixed(6)} Ом (${differentSolution.errorPercent.toFixed(2)}%)</span></div>
                         </div>
-                    </div>
-                    
-                    <div class="value-group">
-                        <div class="value-label">Суммарное сопротивление</div>
-                        <div class="value">🔍 <span>${formatResistance(sameSolution.resultRes)}</span></div>
-                    </div>
-                    
-                    <div class="value-group">
-                        <div class="value-label">Погрешность</div>
-                        <div class="value">⚖ <span>${sameSolution.error.toFixed(6)} Ом (${sameSolution.errorPercent.toFixed(2)}%)</span></div>
-                    </div>
-                    
-                    <div class="formula-box">
-                        R = R / 2 (параллельное соединение)
-                    </div>
-                `;
+                        
+                        <div class="formula-box">
+                            R = (R₁ × R₂) / (R₁ + R₂)
+                        </div>
+                    `;
+                }
                 
                 // Отрисовка решения с одинаковыми резисторами
                 sameBadgeContainer.innerHTML = '';
                 const badge = document.createElement('span');
                 badge.className = 'best-badge';
-                badge.textContent = sameSolution.isExact ? 'ИДЕАЛЬНОЕ' : 'ПРИБЛИЗИТЕЛЬНОЕ';
+                badge.textContent = sameSolution.isExact ? 'ИДЕАЛЬНОЕ' : 'ВАРИАНТ';
                 sameBadgeContainer.appendChild(badge);
                 
                 sameTitle.textContent = "Одинаковые резисторы";
-                sameCard.style.display = sameSolution.isExact && !differentHasLessError ? 'none' : 'block';
+                sameCard.style.display = 'block';
                 
-                sameContent.innerHTML = sameSolution.isExact && !differentHasLessError ? 
-                    `<div class="exact-match">Точное решение уже показано как основное</div>` :
-                `
+                sameContent.innerHTML = `
                     <div class="resistor-container">
                         ${getSingleResistorSVG()}
-                        <div class="value">
-                            R = ${formatResistance(sameSolution.resistorValue)}
-                        </div>
-                        <div class="value">
-                            (2 одинаковых резистора)
+                        <div class="resistor-single">
+                            <div class="value">
+                                R = ${formatResistance(sameSolution.resistorValue)}
+                            </div>
+                            <div class="value-label">
+                                2 одинаковых резистора
+                            </div>
                         </div>
                     </div>
                     
                     <div class="value-group">
                         <div class="value-label">Суммарное сопротивление</div>
-                        <div class="value">🔍 <span>${formatResistance(sameSolution.resultRes)}</span></div>
+                        <div class="value"><span>${formatResistance(sameSolution.resultRes)}</span></div>
                     </div>
                     
                     <div class="value-group">
                         <div class="value-label">Погрешность</div>
-                        <div class="value">⚖ <span>${sameSolution.error.toFixed(6)} Ом (${sameSolution.errorPercent.toFixed(2)}%)</span></div>
+                        <div class="value"><span>${sameSolution.error.toFixed(6)} Ом (${sameSolution.errorPercent.toFixed(2)}%)</span></div>
                     </div>
                     
-                    ${sameSolution.isExact ? `<div class="exact-match">Точное решение! Реальные параметры совпадают с расчётными</div>` : ''}
+                    ${sameSolution.isExact ? `<div class="exact-match">Точное совпадение!</div>` : ''}
                     
                     <div class="formula-box">
-                        R = R / 2 (сдвоенные резисторы)
+                        R = Rₒ / 2 (параллельное соединение)
                     </div>
                 `;
             }
